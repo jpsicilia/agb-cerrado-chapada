@@ -1,0 +1,111 @@
+# =============================================================
+# Central configuration — Undergraduate thesis (TCC)
+# Aboveground Biomass (AGB) estimation in the Cerrado
+# Chapada dos Veadeiros (GEDI L4A + SAR/optical fusion + QRF/CQR)
+# All project-specific parameters live here. Never hardcode.
+# =============================================================
+
+project:
+  name: "agb-cerrado-chapada"
+  author: "Jose Pablo Perez Cicilia"
+  orcid: "0009-0000-0519-8149"
+  gee_project: "alert-result-474012-g5"   # user's GEE project
+
+# -------------------------------------------------------------
+# Study area (AOI)
+# NOTE: the area is NOT a rectangle. It is the WDPA park polygon
+# clipped to Goias (to exclude PARNA das Emas) + a 25 km buffer.
+# We store the PARAMETERS that generate the area, not a bbox.
+# Area verified in GEE: 11,934.66 km2 (control number).
+# -------------------------------------------------------------
+study_area:
+  name: "Chapada dos Veadeiros + 25 km buffer"
+  source: "WDPA (WCMC/WDPA/current/polygons)"
+  filter_name: "Cerrado Protected"        # stringContains filter on the NAME field
+  # AUXILIARY rectangle, only to clip to Goias and exclude PARNA das Emas.
+  # This is NOT the study area — it is just the clipping region [W, S, E, N].
+  clip_region_bbox: [-48.5, -14.8, -46.8, -13.0]
+  buffer_m: 25000                          # buffer applied to the polygon, in meters
+  crs_geographic: "EPSG:4326"              # lat/long (visualization)
+  crs_projected: "EPSG:31983"              # SIRGAS 2000 / UTM 23S (buffer and areas in meters)
+  resolution_m: 30                         # common output grid
+  area_km2_expected: 11934.66              # CONTROL: rebuilding the AOI must yield this value
+                                           #   ~2,400   = forgot the buffer
+                                           #   ~150,000 = grabbed the old rectangular bbox
+
+# -------------------------------------------------------------
+# Data sources
+# -------------------------------------------------------------
+data:
+  # The study area is defined via GEE (WDPA), see scripts/01_define_aoi.js
+  # and the study_area section above. There is no local boundary shapefile.
+  aoi_script: "scripts/01_define_aoi.js"
+
+  # Land-use / land-cover mask
+  landcover: "MapBiomas Collection 9 (2023)"
+  # MapBiomas classes to KEEP (native Cerrado vegetation):
+  # 3=Forest Formation, 4=Savanna Formation, 11=Wetland,
+  # 12=Grassland Formation, 29=Rocky Outcrop
+  landcover_keep_classes: [3, 4, 11, 12, 29]
+  # Classes to EXCLUDE explicitly: agriculture, pasture, urban, water
+  landcover_drop_classes: [15, 18, 19, 21, 24, 25, 33]
+
+  # GEDI L4A
+  gedi_product: "GEDI L4A v2.1"
+  gedi_doi: "10.3334/ORNLDAAC/2056"
+  # Period: pre-gap + post-gap (hibernation Mar/2023 - Apr/2024)
+  gedi_periods:
+    - ["2019-04-01", "2023-03-17"]
+    - ["2024-04-26", "2024-12-31"]
+
+  # Optical/SAR predictors
+  sentinel2: "COPERNICUS/S2_SR_HARMONIZED"   # L2A
+  sentinel1: "COPERNICUS/S1_GRD"             # C-band
+  alos2: "JAXA/ALOS/PALSAR-2/Level2_2/ScanSAR"  # L-band (confirm asset)
+  srtm: "USGS/SRTMGL1_003"
+
+  # Temporal composite (leaf-on coherent; see cloud tension in the document)
+  composite_start: "2023-01-01"
+  composite_end: "2023-12-31"
+
+# -------------------------------------------------------------
+# GEDI quality filter (7 layers)
+# -------------------------------------------------------------
+gedi_filter:
+  l4_quality_flag: 1
+  degrade_flag: 0
+  sensitivity_min: 0.95          # 0.98 for dense formations
+  sensitivity_dense: 0.98
+  slope_max_deg: 15              # DEGREES (SRTM) — do not confuse with the 20% of SAR indices
+  agbd_min: 0                    # Mg/ha
+  agbd_max: 500                  # plausible upper bound for the Cerrado
+  beam_type: "power"             # prioritize power beams
+  spatial_thinning_m: 200        # minimum distance between footprints
+
+# -------------------------------------------------------------
+# Model: QRF + Conformal (CQR)
+# -------------------------------------------------------------
+model:
+  qrf_n_estimators: 500
+  qrf_min_samples_leaf: 5
+  qrf_max_features: "sqrt"
+  quantiles: [0.05, 0.5, 0.95]   # central 90% interval
+  cqr_alpha: 0.10                # 1 - alpha = 90% nominal coverage
+  window_size: 3                 # 3x3 window for footprint-predictor matching
+
+# -------------------------------------------------------------
+# Spatial validation (3 disjoint partitions + block CV)
+# -------------------------------------------------------------
+validation:
+  # three spatially disjoint blocks, separated by a minimum distance
+  split_train: 0.60
+  split_calibration: 0.20
+  split_test: 0.20
+  min_separation_m: 1000         # buffer between partitions
+  block_cv_folds: 10
+  block_size_m: 5000             # spatial block size (guided by autocorrelation)
+
+# -------------------------------------------------------------
+# Reproducibility
+# -------------------------------------------------------------
+random_seed: 42

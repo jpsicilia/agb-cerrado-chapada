@@ -1,0 +1,30 @@
+# Data (heavy — never version; document origin in README)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+
+# Large results (rasters, models)
+results/*.tif
+results/*.pkl
+results/*.joblib
+!results/.gitkeep
+
+# GEE credentials / secrets
+*.json
+.env
+credentials/
+!config/*.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# System
+.DS_Store
+Thumbs.db

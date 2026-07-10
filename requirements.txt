@@ -1,0 +1,37 @@
+# Core geospatial
+earthengine-api==0.1.408
+geemap==0.32.0
+rasterio==1.3.9
+geopandas==0.14.3
+shapely==2.0.3
+pyproj==3.6.1
+fiona==1.9.6
+
+# Data / numeric
+numpy==1.26.4
+pandas==2.2.1
+scipy==1.12.0
+xarray==2024.2.0
+
+# Machine learning + UQ
+scikit-learn==1.4.1.post1
+quantile-forest==1.3.7      # QRF (Meinshausen) efficient implementation
+mapie==0.8.3                # conformal prediction (CQR)
+
+# Visualization
+matplotlib==3.8.3
+seaborn==0.13.2
+contextily==1.6.0
+
+# Config / util
+pyyaml==6.0.1
+tqdm==4.66.2
+
+# Code quality
+pytest==8.1.1
+ruff==0.3.4
+black==24.3.0
+
+# Notebooks
+jupyter==1.0.0
+ipykernel==6.29.3

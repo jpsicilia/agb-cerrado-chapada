@@ -1,0 +1,24 @@
+[project]
+name = "agb-cerrado"
+version = "0.1.0"
+description = "Estimativa de biomassa acima do solo (AGB) no Cerrado da Chapada dos Veadeiros com GEDI L4A, fusão SAR/óptica, Quantile Regression Forest e Conformal Prediction."
+authors = [{ name = "Jose Pablo Perez Cicilia" }]
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "MIT" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "N", "D"]   # erros, flake8, imports, warnings, naming, docstrings
+ignore = ["D203", "D213"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
