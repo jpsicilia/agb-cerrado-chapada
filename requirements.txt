@@ -35,3 +35,9 @@ black==24.3.0
 # Notebooks
 jupyter==1.0.0
 ipykernel==6.29.3
+
+# Version pins to avoid known conflicts (2025-2026):
+# - setuptools >=81 removes pkg_resources, which geemap still imports.
+# - ipython >=8.13 moves `display` out of IPython.core.display (geemap breaks).
+setuptools<81
+ipython<8.13
