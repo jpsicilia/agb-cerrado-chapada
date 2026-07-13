@@ -53,20 +53,34 @@ data:
   # GEDI L4A
   gedi_product: "GEDI L4A v2.1"
   gedi_doi: "10.3334/ORNLDAAC/2056"
-  # Period: pre-gap + post-gap (hibernation Mar/2023 - Apr/2024)
-  gedi_periods:
-    - ["2019-04-01", "2023-03-17"]
-    - ["2024-04-26", "2024-12-31"]
+  gedi_collection: "LARSE/GEDI/GEDI04_A_002_MONTHLY"   # GEE raster (coverage: Mar 2019 - Mar 2023)
+  # ---------------------------------------------------------------
+  # TEMPORAL DESIGN (consolidated decision)
+  # Working years: 2020-2022 (dense core, pre-hibernation, ~338k footprints
+  # before filtering). 2019 partial, 2023 sparse (hiatus), 2024+ not in the
+  # GEE collection. Philosophy B: pool multiple years but match EACH footprint
+  # with predictors of ITS OWN year.
+  # Reference for quality filtering: Kellner et al. (2023), Earth & Space
+  # Science, DOI 10.1029/2022EA002516 (official GEDI L4A ATBD, peer-reviewed).
+  # ---------------------------------------------------------------
+  gedi_years: [2020, 2021, 2022]
+  # Processing ORDER matters: quality flags -> spatial thinning (per year)
+  # -> pool years -> match predictors of each footprint's year.
 
   # Optical/SAR predictors
+  # Sentinel-1/2 -> seasonal composites (dry + wet) per year.
+  # ALOS-2 -> annual mosaic only (JAXA does not publish seasonal). Confirm
+  #           availability for 2020, 2021, 2022 in Phase 3.
+  # SRTM/DEM -> STATIC (elevation, slope, aspect); same for all footprints.
   sentinel2: "COPERNICUS/S2_SR_HARMONIZED"   # L2A
   sentinel1: "COPERNICUS/S1_GRD"             # C-band
-  alos2: "JAXA/ALOS/PALSAR-2/Level2_2/ScanSAR"  # L-band (confirm asset)
+  alos2: "JAXA/ALOS/PALSAR-2/yearly/SAR"     # L-band annual mosaic (confirm asset in Phase 3)
   srtm: "USGS/SRTMGL1_003"
 
-  # Temporal composite (leaf-on coherent; see cloud tension in the document)
-  composite_start: "2023-01-01"
-  composite_end: "2023-12-31"
+  # Seasonal windows for Sentinel composites (Cerrado; refine in Phase 3).
+  # Dry season ~ May-Sep; wet season ~ Nov-Mar. Applied per year.
+  dry_season_months: [5, 6, 7, 8, 9]
+  wet_season_months: [11, 12, 1, 2, 3]
 
 # -------------------------------------------------------------
 # GEDI quality filter (7 layers)
