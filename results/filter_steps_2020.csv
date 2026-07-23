@@ -1,0 +1,12 @@
+criterion,kept,removed,pct_of_start,year
+(no filter),374829,0,100.0,2020
+l4_quality_flag == 1,163798,211031,43.7,2020
+l2_quality_flag == 1,163798,0,43.7,2020
+quality_flag == 1,163253,545,43.6,2020
+algorithm_run_flag == 1,163253,0,43.6,2020
+degrade_flag == 0,108070,55183,28.8,2020
+num_detectedmodes >= 1,108070,0,28.8,2020
+solar_elevation < 0,82812,25258,22.1,2020
+power beams only,61130,21682,16.3,2020
+0 <= agbd <= 500,61031,99,16.3,2020
+|elev - DEM| < 100 m,61026,5,16.3,2020
