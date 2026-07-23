@@ -41,3 +41,9 @@ ipykernel==6.29.3
 # - ipython >=8.13 moves `display` out of IPython.core.display (geemap breaks).
 setuptools<81
 ipython<8.13
+
+# NASA data access (GEDI download and reading, notebooks 02-03)
+earthaccess==0.17.0
+harmony-py==1.4.0
+h5py==3.16.0
+pyarrow==25.0.0
